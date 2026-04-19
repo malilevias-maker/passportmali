@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>דנה שפירו | מנהלת תיק לקוחות</title>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0b0b18;
+      --bg2: #10101f;
+      --bg3: #15152a;
+      --gold: #d4af37;
+      --gold-light: #f0d060;
+      --purple: #6c5ce7;
+      --purple-light: #a29bfe;
+      --text: #f1f5f9;
+      --text-muted: #8892a4;
+      --border: rgba(255,255,255,0.08);
+      --card: rgba(255,255,255,0.03);
+      --card-hover: rgba(255,255,255,0.07);
+      --radius: 16px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.4);
+      --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Heebo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+    ::selection { background: var(--gold); color: #000; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+    /* ===== UTILITIES ===== */
+    .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 100px 0; }
+    .section-tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: rgba(212,175,55,0.1);
+      border: 1px solid rgba(212,175,55,0.2);
+      border-radius: 100px;
+      padding: 6px 18px;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    .section-subtitle {
+      font-size: 17px;
+      color: var(--text-muted);
+      max-width: 560px;
+      margin-bottom: 48px;
+    }
+    .divider {
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--gold), var(--purple));
+      border-radius: 2px;
+      margin-bottom: 32px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 32px;
+      border-radius: 50px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'Heebo', sans-serif;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      text-decoration: none;
+    }
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), #b8962e);
+      color: #000;
+      box-shadow: 0 4px 20px rgba(212,175,55,0.3);
+    }
+    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(212,175,55,0.4); }
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      transition: var(--transition);
+      backdrop-filter: blur(10px);
+    }
+    .card:hover { background: var(--card-hover); border-color: rgba(212,175,55,0.2); transform: translateY(-4px); box-shadow: var(--shadow); }
+
+    /* ===== NAV ===== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0 24px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(11,11,24,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: var(--transition);
+    }
+    .nav-logo {
+      font-size: 22px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--gold), var(--purple-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 15px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: var(--transition);
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--gold); background: rgba(212,175,55,0.08); }
+    .nav-actions { display: flex; align-items: center; gap: 12px; }
+    .nav-settings-btn {
+      background: none;
+      border: 1.5px solid var(--border);
+      color: var(--text-muted);
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      font-size: 16px;
+    }
+    .nav-settings-btn:hover { color: var(--gold); border-color: var(--gold); }
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 8px;
+      background: none;
+      border: none;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 70px; left: 0; right: 0;
+      background: rgba(11,11,24,0.97);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 24px;
+      z-index: 99;
+    }
+    .mobile-menu.open { display: block; }
+    .mobile-menu a {
+      display: block;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 16px;
+      font-weight: 500;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      transition: var(--transition);
+    }
+    .mobile-menu a:hover { color: var(--gold); padding-right: 12px; }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+    }
+
+    /* ===== HERO ===== */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding-top: 70px;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 50%, rgba(108,92,231,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 50% at 80% 30%, rgba(212,175,55,0.08) 0%, transparent 70%);
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+      position: relative;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(212,175,55,0.1);
+      border: 1px solid rgba(212,175,55,0.25);
+      border-radius: 100px;
+      padding: 8px 20px;
+      font-size: 13px;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 28px;
+    }
+    .hero-badge-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--gold);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.3); } }
+    .hero-name {
+      font-size: clamp(36px, 5vw, 64px);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    .hero-name span {
+      background: linear-gradient(135deg, var(--gold), var(--gold-light), var(--purple-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-title {
+      font-size: clamp(16px, 2vw, 22px);
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+    .hero-desc {
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 40px;
+    }
+    .hero-stats {
+      display: flex;
+      gap: 32px;
+      margin-bottom: 40px;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat-num {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .hero-stat-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+    .hero-image-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero-avatar {
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--bg3), var(--bg2));
+      border: 3px solid rgba(212,175,55,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 120px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(212,175,55,0.15), 0 0 120px rgba(108,92,231,0.1);
+    }
+    .hero-avatar-ring {
+      position: absolute;
+      inset: -20px;
+      border: 2px dashed rgba(212,175,55,0.2);
+      border-radius: 50%;
+      animation: spin 20s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .hero-floating-card {
+      position: absolute;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      animation: float 4s ease-in-out infinite;
+      font-size: 14px;
+    }
+    .hero-floating-card.card1 { bottom: 30px; right: -20px; animation-delay: 0s; }
+    .hero-floating-card.card2 { top: 50px; left: -20px; animation-delay: 2s; }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    .float-icon { font-size: 24px; }
+
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; text-align: center; gap: 48px; }
+      .hero-image-wrap { order: -1; }
+      .hero-stats { justify-content: center; }
+      .hero-actions { justify-content: center; }
+      .hero-avatar { width: 240px; height: 240px; font-size: 80px; }
+      .section-subtitle { margin-left: auto; margin-right: auto; }
+    }
+
+    /* ===== ABOUT ===== */
+    #about { background: var(--bg2); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 64px;
+      align-items: start;
+    }
+    .about-skills { display: flex; flex-direction: column; gap: 18px; margin-top: 32px; }
+    .skill-item {}
+    .skill-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .skill-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .skill-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), var(--purple));
+      border-radius: 4px;
+      transition: width 1.5s cubic-bezier(0.4,0,0.2,1);
+    }
+    .about-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .about-info-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .about-info-label { font-size: 12px; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+    .about-info-value { font-size: 15px; font-weight: 600; }
+    @media (max-width: 900px) {
+      .about-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ===== SERVICES ===== */
+    #services { background: var(--bg); }
+    .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .service-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 28px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--purple));
+      transform: scaleX(0);
+      transition: var(--transition);
+    }
+    .service-card:hover { background: var(--card-hover); transform: translateY(-6px); box-shadow: var(--shadow); }
+    .service-card:hover::before { transform: scaleX(1); }
+    .service-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      background: rgba(212,175,55,0.1);
+      border: 1px solid rgba(212,175,55,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin-bottom: 24px;
+    }
+    .service-title { font-size: 20px; font-weight: 700; margin-bottom: 12px; }
+    .service-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
+    @media (max-width: 900px) { .services-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 1200px) { .services-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    /* ===== TESTIMONIALS ===== */
+    #testimonials { background: var(--bg2); }
+    .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .testimonial-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      transition: var(--transition);
+    }
+    .testimonial-card:hover { background: var(--card-hover); transform: translateY(-4px); }
+    .testimonial-stars { color: var(--gold); font-size: 14px; margin-bottom: 16px; }
+    .testimonial-text { font-size: 15px; color: var(--text-muted); line-height: 1.8; margin-bottom: 24px; font-style: italic; }
+    .testimonial-author { display: flex; align-items: center; gap: 14px; }
+    .testimonial-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .testimonial-name { font-size: 15px; font-weight: 700; }
+    .testimonial-role { font-size: 13px; color: var(--text-muted); }
+    @media (max-width: 900px) { .testimonials-grid { grid-template-columns: 1fr; } }
+
+    /* ===== MOVIES ===== */
+    #movies { background: var(--bg); }
+    .movies-search {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+    .search-input-wrap {
+      flex: 1;
+      position: relative;
+    }
+    .search-input-wrap i {
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 48px 14px 20px;
+      color: var(--text);
+      font-size: 15px;
+      font-family: 'Heebo', sans-serif;
+      transition: var(--transition);
+      outline: none;
+    }
+    .search-input:focus { border-color: var(--gold); background: var(--card-hover); }
+    .search-input::placeholder { color: var(--text-muted); }
+    .movie-result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+    .movie-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .movie-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.4); border-color: rgba(212,175,55,0.2); }
+    .movie-poster {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+      background: var(--bg3);
+      display: block;
+    }
+    .movie-poster-placeholder {
+      width: 100%;
+      height: 320px;
+      background: linear-gradient(135deg, var(--bg3), var(--bg2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+    }
+    .movie-info { padding: 20px; }
+    .movie-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; line-height: 1.3; }
+    .movie-meta { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
+    .movie-rating { display: flex; align-items: center; gap: 4px; color: var(--gold); font-weight: 700; }
+    .movie-plot { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+    .movies-empty {
+      text-align: center;
+      padding: 64px 32px;
+      color: var(--text-muted);
+    }
+    .movies-empty i { font-size: 48px; margin-bottom: 16px; display: block; }
+    .movies-loading { text-align: center; padding: 48px; color: var(--text-muted); }
+    .spinner { display: inline-block; width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin-anim 0.8s linear infinite; }
+    @keyframes spin-anim { to { transform: rotate(360deg); } }
+    .api-key-notice {
+      background: rgba(212,175,55,0.08);
+      border: 1px solid rgba(212,175,55,0.2);
+      border-radius: 12px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 14px;
+      color: var(--gold);
+    }
+
+    /* ===== CONTACT ===== */
+    #contact { background: var(--bg2); }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 64px; align-items: start; }
+    .contact-item { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 32px; }
+    .contact-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(212,175,55,0.1);
+      border: 1px solid rgba(212,175,55,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+    .contact-label { font-size: 12px; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+    .contact-value { font-size: 15px; font-weight: 600; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+    .form-input, .form-textarea {
+      width: 100%;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      color: var(--text);
+      font-size: 15px;
+      font-family: 'Heebo', sans-serif;
+      transition: var(--transition);
+      outline: none;
+    }
+    .form-input:focus, .form-textarea:focus { border-color: var(--gold); background: var(--card-hover); }
+    .form-textarea { resize: vertical; min-height: 130px; }
+    .form-success {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(52,211,153,0.1);
+      border: 1px solid rgba(52,211,153,0.3);
+      border-radius: 12px;
+      padding: 16px 20px;
+      color: #34d399;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 16px;
+    }
+    @media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; } }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      text-align: center;
+    }
+    .footer-name {
+      font-size: 20px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--gold), var(--purple-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+    .footer-text { font-size: 14px; color: var(--text-muted); }
+    .footer-social { display: flex; justify-content: center; gap: 16px; margin: 20px 0; }
+    .social-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: var(--transition);
+      font-size: 16px;
+    }
+    .social-btn:hover { color: var(--gold); border-color: var(--gold); background: rgba(212,175,55,0.08); transform: translateY(-3px); }
+
+    /* ===== SETTINGS MODAL ===== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
+    .modal-title { font-size: 22px; font-weight: 800; }
+    .modal-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      font-size: 16px;
+    }
+    .modal-close:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+    .api-note {
+      background: rgba(108,92,231,0.1);
+      border: 1px solid rgba(108,92,231,0.2);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 13px;
+      color: var(--purple-light);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    .api-note a { color: var(--gold); }
+    .input-group { margin-bottom: 20px; }
+    .input-label { display: block; font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+    .input-field {
+      width: 100%;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 16px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: 'Heebo', sans-serif;
+      transition: var(--transition);
+      outline: none;
+    }
+    .input-field:focus { border-color: var(--gold); }
+    .input-hint { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+
+    /* ===== CHAT ===== */
+    .chat-fab {
+      position: fixed;
+      bottom: 28px;
+      left: 28px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), #4c3bb8);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: white;
+      box-shadow: 0 8px 30px rgba(108,92,231,0.4);
+      transition: var(--transition);
+      z-index: 90;
+    }
+    .chat-fab:hover { transform: scale(1.1); box-shadow: 0 12px 40px rgba(108,92,231,0.5); }
+    .chat-fab-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 18px;
+      height: 18px;
+      background: var(--gold);
+      border-radius: 50%;
+      border: 2px solid var(--bg);
+      font-size: 10px;
+      color: #000;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .chat-window {
+      position: fixed;
+      bottom: 100px;
+      left: 28px;
+      width: 380px;
+      max-height: 560px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .chat-header {
+      padding: 18px 20px;
+      background: linear-gradient(135deg, rgba(108,92,231,0.15), rgba(212,175,55,0.08));
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .chat-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), #4c3bb8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .chat-header-info { flex: 1; }
+    .chat-header-name { font-size: 15px; font-weight: 700; }
+    .chat-header-status { font-size: 12px; color: #34d399; display: flex; align-items: center; gap: 5px; }
+    .chat-header-status::before { content: ''; width: 7px; height: 7px; background: #34d399; border-radius: 50%; display: inline-block; }
+    .chat-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+    .chat-close:hover { color: var(--text); }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 280px;
+      max-height: 340px;
+    }
+    .chat-messages::-webkit-scrollbar { width: 4px; }
+    .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .msg {
+      display: flex;
+      gap: 10px;
+      animation: msgIn 0.3s ease;
+    }
+    @keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .msg.user { flex-direction: row-reverse; }
+    .msg-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .msg.user .msg-avatar { background: linear-gradient(135deg, var(--gold), #b8962e); }
+    .msg-bubble {
+      max-width: 75%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .msg.bot .msg-bubble {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-bottom-right-radius: 4px;
+    }
+    .msg.user .msg-bubble {
+      background: linear-gradient(135deg, var(--purple), #4c3bb8);
+      color: white;
+      border-bottom-left-radius: 4px;
+    }
+    .msg-typing {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      padding: 14px 18px;
+    }
+    .msg-typing span {
+      width: 8px;
+      height: 8px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      animation: typing 1.2s infinite;
+    }
+    .msg-typing span:nth-child(2) { animation-delay: 0.2s; }
+    .msg-typing span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing { 0%,60%,100% { transform: translateY(0); opacity: 0.5; } 30% { transform: translateY(-6px); opacity: 1; } }
+    .chat-footer { padding: 16px 20px; border-top: 1px solid var(--border); }
+    .chat-input-row { display: flex; gap: 10px; }
+    .chat-input {
+      flex: 1;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 16px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: 'Heebo', sans-serif;
+      outline: none;
+      transition: var(--transition);
+    }
+    .chat-input:focus { border-color: var(--purple); }
+    .chat-send {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--purple), #4c3bb8);
+      border: none;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+    .chat-send:hover { transform: scale(1.08); }
+    .chat-send:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .chat-no-key {
+      text-align: center;
+      padding: 32px 20px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .chat-no-key i { font-size: 32px; margin-bottom: 12px; display: block; color: var(--gold); }
+    .chat-clear {
+      font-size: 12px;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: var(--transition);
+      margin-top: 8px;
+      font-family: 'Heebo', sans-serif;
+    }
+    .chat-clear:hover { color: #f87171; }
+
+    @media (max-width: 480px) {
+      .chat-window { left: 12px; right: 12px; width: auto; bottom: 90px; }
+      .chat-fab { bottom: 20px; left: 20px; }
+    }
+
+    /* ===== SCROLL REVEAL ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ===== HERO SCROLL INDICATOR ===== */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      font-size: 12px;
+      animation: fadeInUp 2s ease 1s both;
+    }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+    .scroll-mouse {
+      width: 22px;
+      height: 36px;
+      border: 2px solid var(--border);
+      border-radius: 11px;
+      display: flex;
+      justify-content: center;
+      padding-top: 6px;
+    }
+    .scroll-wheel {
+      width: 4px;
+      height: 8px;
+      background: var(--gold);
+      border-radius: 2px;
+      animation: scroll-wheel 2s infinite;
+    }
+    @keyframes scroll-wheel { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(12px); opacity: 0; } }
+  </style>
+</head>
+<body x-data="app()" x-init="init()">
+
+  <!-- ===== NAVIGATION ===== -->
+  <nav>
+    <a href="#hero" class="nav-logo">ד.ש.</a>
+    <ul class="nav-links">
+      <li><a href="#about" :class="{ active: activeSection === 'about' }">אודות</a></li>
+      <li><a href="#services" :class="{ active: activeSection === 'services' }">שירותים</a></li>
+      <li><a href="#testimonials" :class="{ active: activeSection === 'testimonials' }">המלצות</a></li>
+      <li><a href="#movies" :class="{ active: activeSection === 'movies' }">סרטים</a></li>
+      <li><a href="#contact" :class="{ active: activeSection === 'contact' }">צור קשר</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="nav-settings-btn" @click="showSettings = true" title="הגדרות API">
+        <i class="fa-solid fa-gear"></i>
+      </button>
+    </div>
+    <button class="hamburger" @click="menuOpen = !menuOpen">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="mobile-menu" :class="{ open: menuOpen }" @click="menuOpen = false">
+    <a href="#about">אודות</a>
+    <a href="#services">שירותים</a>
+    <a href="#testimonials">המלצות</a>
+    <a href="#movies">סרטים</a>
+    <a href="#contact">צור קשר</a>
+  </div>
+
+  <!-- ===== HERO ===== -->
+  <section id="hero" class="section">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div>
+          <div class="hero-badge">
+            <div class="hero-badge-dot"></div>
+            זמינה לפגישה עכשיו
+          </div>
+          <h1 class="hero-name">שלום, אני<br /><span>דנה שפירו</span></h1>
+          <p class="hero-title">מנהלת תיק לקוחות בכירה | פניקס ביטוח</p>
+          <p class="hero-desc">
+            מלווה לקוחות בכל שלב – מבחירת הכיסוי הנכון, דרך הטיפול בתביעה, ועד שקט נפשי אמיתי.
+            יותר מ-12 שנים של ניסיון, אלפי לקוחות מרוצים, ופתרון אחד לכל הצרכים שלכם.
+          </p>
+          <div class="hero-stats">
+            <div class="hero-stat"><div class="hero-stat-num">12+</div><div class="hero-stat-label">שנות ניסיון</div></div>
+            <div class="hero-stat"><div class="hero-stat-num">1,400+</div><div class="hero-stat-label">לקוחות מרוצים</div></div>
+            <div class="hero-stat"><div class="hero-stat-num">98%</div><div class="hero-stat-label">שביעות רצון</div></div>
+          </div>
+          <div class="hero-actions">
+            <a href="#contact" class="btn btn-gold"><i class="fa-solid fa-calendar-check"></i> קבעו פגישה</a>
+            <a href="#services" class="btn btn-outline"><i class="fa-solid fa-shield-halved"></i> השירותים שלי</a>
+          </div>
+        </div>
+        <div class="hero-image-wrap">
+          <div class="hero-avatar-ring"></div>
+          <div class="hero-avatar">👩‍💼</div>
+          <div class="hero-floating-card card1">
+            <div class="float-icon">🏆</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;">סוכנת השנה</div>
+              <div style="font-size:12px;color:var(--text-muted);">פניקס 2024</div>
+            </div>
+          </div>
+          <div class="hero-floating-card card2">
+            <div class="float-icon">⭐</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;">דירוג 5/5</div>
+              <div style="font-size:12px;color:var(--text-muted);">Google Reviews</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
+      <span>גלול למטה</span>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT ===== -->
+  <section id="about" class="section">
+    <div class="container">
+      <div class="about-grid">
+        <div class="reveal">
+          <span class="section-tag">קצת עלי</span>
+          <h2 class="section-title">מי אני?</h2>
+          <div class="divider"></div>
+          <p style="color:var(--text-muted);font-size:15px;line-height:1.9;margin-bottom:20px;">
+            גדלתי בתל אביב, למדתי כלכלה ומנהל עסקים, ומצאתי את הדרך שלי לעולם הביטוח כשהבנתי שאנשים צריכים מישהו שידבר איתם בשפה ברורה – בלי ז'רגון, בלי הסתרות.
+          </p>
+          <p style="color:var(--text-muted);font-size:15px;line-height:1.9;">
+            אני מאמינה שביטוח טוב הוא לא רק פוליסה על הנייר – הוא שותפות. אני מלווה את הלקוחות שלי גם ברגעים הקשים, דואגת שיקבלו מה שמגיע להם, ושומרת על קשר אישי לאורך זמן.
+          </p>
+          <div class="about-skills">
+            <template x-for="skill in skills" :key="skill.name">
+              <div class="skill-item">
+                <div class="skill-label">
+                  <span x-text="skill.name"></span>
+                  <span x-text="skill.level + '%'"></span>
+                </div>
+                <div class="skill-bar">
+                  <div class="skill-fill" :style="{ width: skillsVisible ? skill.level + '%' : '0%' }"></div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+        <div class="reveal">
+          <div class="about-info-grid">
+            <div class="about-info-item">
+              <div class="about-info-label">🎓 השכלה</div>
+              <div class="about-info-value">B.A כלכלה ומנהל עסקים<br/>אוניברסיטת ת"א</div>
+            </div>
+            <div class="about-info-item">
+              <div class="about-info-label">🏢 חברה</div>
+              <div class="about-info-value">פניקס ביטוח<br/>סניף מרכז</div>
+            </div>
+            <div class="about-info-item">
+              <div class="about-info-label">🗣️ שפות</div>
+              <div class="about-info-value">עברית, אנגלית<br/>רוסית (בסיסי)</div>
+            </div>
+            <div class="about-info-item">
+              <div class="about-info-label">🎯 התמחות</div>
+              <div class="about-info-value">ביטוח חיים<br/>בריאות ורכב</div>
+            </div>
+          </div>
+          <div class="card" style="margin-top:0;">
+            <div style="font-size:18px;font-weight:800;margin-bottom:12px;">💛 הסרטים שלי</div>
+            <p style="color:var(--text-muted);font-size:14px;line-height:1.7;">
+              בזמן הפנוי אני אוהבת סרטים – קצת קומדיה, קצת דרמה, ולפעמים גם מתח טוב. בסעיף הסרטים תוכלו לחפש כל סרט ולגלות פרטים עליו ✨
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SERVICES ===== -->
+  <section id="services" class="section">
+    <div class="container">
+      <div style="text-align:center;max-width:600px;margin:0 auto 64px;">
+        <span class="section-tag">השירותים שלי</span>
+        <h2 class="section-title">מה אני יכולה לעשות בשבילכם?</h2>
+        <p class="section-subtitle" style="margin:0 auto;">כיסוי מלא לכל תחום – תחת גג אחד, עם ליווי אישי לאורך כל הדרך</p>
+      </div>
+      <div class="services-grid">
+        <template x-for="service in services" :key="service.title">
+          <div class="service-card reveal">
+            <div class="service-icon" x-text="service.icon"></div>
+            <h3 class="service-title" x-text="service.title"></h3>
+            <p class="service-desc" x-text="service.desc"></p>
+          </div>
+        </template>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section id="testimonials" class="section">
+    <div class="container">
+      <div style="text-align:center;max-width:600px;margin:0 auto 64px;">
+        <span class="section-tag">המלצות</span>
+        <h2 class="section-title">מה אומרים הלקוחות?</h2>
+        <p class="section-subtitle" style="margin:0 auto;">לא רק פוליסה – קשר אמיתי לאורך זמן</p>
+      </div>
+      <div class="testimonials-grid">
+        <template x-for="t in testimonials" :key="t.name">
+          <div class="testimonial-card reveal">
+            <div class="testimonial-stars">
+              <template x-for="s in 5"><i class="fa-solid fa-star"></i></template>
+            </div>
+            <p class="testimonial-text" x-text="'&quot;' + t.text + '&quot;'"></p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar" x-text="t.emoji"></div>
+              <div>
+                <div class="testimonial-name" x-text="t.name"></div>
+                <div class="testimonial-role" x-text="t.role"></div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MOVIES ===== -->
+  <section id="movies" class="section">
+    <div class="container">
+      <div style="text-align:center;max-width:600px;margin:0 auto 48px;">
+        <span class="section-tag">הפינה האישית שלי</span>
+        <h2 class="section-title">חפשו סרט</h2>
+        <p class="section-subtitle" style="margin:0 auto;">חיפוש חופשי בבסיס הנתונים של OMDB – שם סרט באנגלית ומקבלים פרטים מיידית</p>
+      </div>
+
+      <template x-if="!omdbKey">
+        <div class="api-key-notice">
+          <i class="fa-solid fa-key" style="font-size:20px;"></i>
+          <div>
+            כדי לחפש סרטים נדרש מפתח OMDB חינמי. לחצו על <strong style="cursor:pointer;text-decoration:underline;" @click="showSettings = true">הגדרות API</strong> להזנה.
+            <br/><small style="opacity:0.7;">הרשמה חינמית ב-<a href="https://www.omdbapi.com/apikey.aspx" target="_blank" style="color:var(--gold);">omdbapi.com</a></small>
+          </div>
+        </div>
+      </template>
+
+      <template x-if="omdbKey">
+        <div>
+          <div class="movies-search">
+            <div class="search-input-wrap">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input
+                class="search-input"
+                type="text"
+                placeholder="חפשו סרט באנגלית... (למשל: Inception)"
+                x-model="movieQuery"
+                @keydown.enter="searchMovies()"
+              />
+            </div>
+            <button class="btn btn-gold" @click="searchMovies()" :disabled="movieLoading">
+              <template x-if="!movieLoading"><i class="fa-solid fa-search"></i></template>
+              <template x-if="movieLoading"><div class="spinner" style="width:18px;height:18px;border-width:2px;"></div></template>
+              חיפוש
+            </button>
+          </div>
+
+          <div x-show="movieLoading" class="movies-loading">
+            <div class="spinner"></div>
+            <p style="margin-top:16px;">מחפש סרטים...</p>
+          </div>
+
+          <div x-show="!movieLoading && movieError" style="text-align:center;padding:32px;color:#f87171;">
+            <i class="fa-solid fa-circle-exclamation" style="font-size:32px;margin-bottom:12px;display:block;"></i>
+            <span x-text="movieError"></span>
+          </div>
+
+          <div x-show="!movieLoading && !movieError && movies.length > 0" class="movie-result-grid">
+            <template x-for="movie in movies" :key="movie.imdbID">
+              <div class="movie-card">
+                <template x-if="movie.Poster && movie.Poster !== 'N/A'">
+                  <img class="movie-poster" :src="movie.Poster" :alt="movie.Title" loading="lazy" />
+                </template>
+                <template x-if="!movie.Poster || movie.Poster === 'N/A'">
+                  <div class="movie-poster-placeholder">🎬</div>
+                </template>
+                <div class="movie-info">
+                  <h3 class="movie-title" x-text="movie.Title"></h3>
+                  <div class="movie-meta">
+                    <span x-text="movie.Year"></span>
+                    <span>·</span>
+                    <span x-text="movie.Genre ? movie.Genre.split(',')[0] : ''"></span>
+                    <template x-if="movie.imdbRating && movie.imdbRating !== 'N/A'">
+                      <span class="movie-rating"><i class="fa-solid fa-star" style="font-size:11px;"></i> <span x-text="movie.imdbRating"></span></span>
+                    </template>
+                  </div>
+                  <p class="movie-plot" x-text="movie.Plot && movie.Plot !== 'N/A' ? movie.Plot.substring(0, 100) + (movie.Plot.length > 100 ? '...' : '') : ''"></p>
+                </div>
+              </div>
+            </template>
+          </div>
+
+          <template x-if="!movieLoading && !movieError && movies.length === 0 && movieQuery === ''">
+            <div class="movies-empty">
+              <i class="fa-solid fa-film"></i>
+              <p style="font-size:16px;font-weight:600;margin-bottom:8px;">מה רוצים לראות הערב?</p>
+              <p>הזינו שם סרט בשדה החיפוש למעלה</p>
+            </div>
+          </template>
+
+          <template x-if="!movieLoading && !movieError && movies.length === 0 && movieQuery !== '' && searchedOnce">
+            <div class="movies-empty">
+              <i class="fa-solid fa-face-frown"></i>
+              <p>לא נמצאו תוצאות לחיפוש זה</p>
+            </div>
+          </template>
+        </div>
+      </template>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT ===== -->
+  <section id="contact" class="section">
+    <div class="container">
+      <div style="text-align:center;max-width:600px;margin:0 auto 64px;">
+        <span class="section-tag">צור קשר</span>
+        <h2 class="section-title">בואו נדבר!</h2>
+        <p class="section-subtitle" style="margin:0 auto;">פגישת ייעוץ ראשונה – ללא עלות וללא התחייבות</p>
+      </div>
+      <div class="contact-grid">
+        <div class="reveal">
+          <div class="contact-item">
+            <div class="contact-icon"><i class="fa-solid fa-phone"></i></div>
+            <div>
+              <div class="contact-label">טלפון</div>
+              <div class="contact-value">050-123-4567</div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon"><i class="fa-solid fa-envelope"></i></div>
+            <div>
+              <div class="contact-label">אימייל</div>
+              <div class="contact-value">dana@phoenix.co.il</div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon"><i class="fa-solid fa-location-dot"></i></div>
+            <div>
+              <div class="contact-label">כתובת</div>
+              <div class="contact-value">דרך מנחם בגין 121<br/>תל אביב</div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon"><i class="fa-solid fa-clock"></i></div>
+            <div>
+              <div class="contact-label">שעות פעילות</div>
+              <div class="contact-value">א׳–ה׳: 9:00 – 18:00<br/>ו׳: 9:00 – 13:00</div>
+            </div>
+          </div>
+        </div>
+        <div class="reveal">
+          <div class="card" style="padding:40px;">
+            <h3 style="font-size:20px;font-weight:800;margin-bottom:28px;">שלחו לי הודעה</h3>
+            <form @submit.prevent="submitContact()">
+              <div class="form-group">
+                <label class="form-label">שם מלא</label>
+                <input class="form-input" type="text" placeholder="ישראל ישראלי" x-model="contactForm.name" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">טלפון</label>
+                <input class="form-input" type="tel" placeholder="050-000-0000" x-model="contactForm.phone" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">נושא</label>
+                <input class="form-input" type="text" placeholder="ביטוח חיים / בריאות / רכב..." x-model="contactForm.subject" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">הודעה</label>
+                <textarea class="form-textarea" placeholder="ספרו לי על הצרכים שלכם..." x-model="contactForm.message"></textarea>
+              </div>
+              <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;">
+                <i class="fa-solid fa-paper-plane"></i> שלחו הודעה
+              </button>
+            </form>
+            <div x-show="contactSuccess" class="form-success">
+              <i class="fa-solid fa-circle-check" style="font-size:20px;"></i>
+              ההודעה נשמרה! אחזור אליכם בהקדם 😊
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="container">
+      <div class="footer-name">דנה שפירו</div>
+      <div class="footer-social">
+        <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#" class="social-btn"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="social-btn"><i class="fab fa-whatsapp"></i></a>
+        <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
+      </div>
+      <p class="footer-text">© 2025 דנה שפירו · כל הזכויות שמורות · רישיון סוכן ביטוח מס׳ 12345</p>
+    </div>
+  </footer>
+
+  <!-- ===== SETTINGS MODAL ===== -->
+  <div class="modal-backdrop" x-show="showSettings" x-transition @click.self="showSettings = false">
+    <div class="modal" @click.stop>
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">⚙️ הגדרות API</h2>
+          <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">המפתחות נשמרים רק ב-LocalStorage שלכם</p>
+        </div>
+        <button class="modal-close" @click="showSettings = false"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="api-note">
+        <i class="fa-solid fa-lock" style="margin-left:6px;"></i>
+        המפתחות שלכם <strong>לא עוברים שום שרת</strong> – נשמרים רק בדפדפן שלכם (LocalStorage).
+      </div>
+      <div class="input-group">
+        <label class="input-label">🤖 Gemini API Key</label>
+        <input class="input-field" type="password" placeholder="AIza..." x-model="tempGeminiKey" />
+        <p class="input-hint">קבלו מפתח חינמי ב-<a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--gold);">Google AI Studio</a></p>
+      </div>
+      <div class="input-group">
+        <label class="input-label">🎬 OMDB API Key</label>
+        <input class="input-field" type="password" placeholder="abc12345" x-model="tempOmdbKey" />
+        <p class="input-hint">קבלו מפתח חינמי ב-<a href="https://www.omdbapi.com/apikey.aspx" target="_blank" style="color:var(--gold);">omdbapi.com</a></p>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:8px;">
+        <button class="btn btn-gold" style="flex:1;justify-content:center;" @click="saveSettings()">
+          <i class="fa-solid fa-floppy-disk"></i> שמור
+        </button>
+        <button class="btn btn-outline" style="justify-content:center;" @click="showSettings = false">ביטול</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CHAT FAB ===== -->
+  <button class="chat-fab" @click="chatOpen = !chatOpen" title="שאלו אותי כל שאלה">
+    <template x-if="!chatOpen"><i class="fa-solid fa-comment-dots"></i></template>
+    <template x-if="chatOpen"><i class="fa-solid fa-xmark"></i></template>
+    <template x-if="chatMessages.length > 0 && !chatOpen">
+      <div class="chat-fab-badge" x-text="chatMessages.length > 9 ? '9+' : chatMessages.length"></div>
+    </template>
+  </button>
+
+  <!-- ===== CHAT WINDOW ===== -->
+  <div class="chat-window" x-show="chatOpen" x-transition>
+    <div class="chat-header">
+      <div class="chat-avatar">🤖</div>
+      <div class="chat-header-info">
+        <div class="chat-header-name">דנה AI – עוזרת ביטוח</div>
+        <div class="chat-header-status">מחובר – מופעל ע״י Gemini</div>
+      </div>
+      <button class="chat-close" @click="chatOpen = false"><i class="fa-solid fa-minus"></i></button>
+    </div>
+
+    <template x-if="!geminiKey">
+      <div class="chat-no-key">
+        <i class="fa-solid fa-key"></i>
+        <p style="font-weight:700;margin-bottom:8px;">נדרש מפתח Gemini</p>
+        <p style="font-size:13px;margin-bottom:16px;">כדי לשוחח עם הבינה המלאכותית, הזינו מפתח Gemini API</p>
+        <button class="btn btn-gold" style="font-size:13px;padding:10px 24px;" @click="showSettings = true; chatOpen = false;">
+          <i class="fa-solid fa-gear"></i> פתח הגדרות
+        </button>
+      </div>
+    </template>
+
+    <template x-if="geminiKey">
+      <div style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+        <div class="chat-messages" x-ref="chatMessages">
+          <template x-if="chatMessages.length === 0">
+            <div style="text-align:center;padding:24px;color:var(--text-muted);font-size:14px;">
+              <div style="font-size:36px;margin-bottom:12px;">👋</div>
+              <p style="font-weight:600;margin-bottom:6px;">שלום! אני כאן לעזור</p>
+              <p>שאלו אותי כל שאלה בנושא ביטוח, שירותים, או כל דבר אחר</p>
+            </div>
+          </template>
+          <template x-for="(msg, idx) in chatMessages" :key="idx">
+            <div class="msg" :class="msg.role === 'user' ? 'user' : 'bot'">
+              <div class="msg-avatar">
+                <template x-if="msg.role === 'user'">👤</template>
+                <template x-if="msg.role === 'model'">🤖</template>
+              </div>
+              <div class="msg-bubble" x-text="msg.text"></div>
+            </div>
+          </template>
+          <template x-if="chatLoading">
+            <div class="msg bot">
+              <div class="msg-avatar">🤖</div>
+              <div class="msg-bubble" style="padding:0;">
+                <div class="msg-typing">
+                  <span></span><span></span><span></span>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+        <div class="chat-footer">
+          <div class="chat-input-row">
+            <input
+              class="chat-input"
+              type="text"
+              placeholder="כתבו שאלה..."
+              x-model="chatInput"
+              @keydown.enter="sendMessage()"
+              :disabled="chatLoading"
+            />
+            <button class="chat-send" @click="sendMessage()" :disabled="chatLoading || !chatInput.trim()">
+              <i class="fa-solid fa-paper-plane"></i>
+            </button>
+          </div>
+          <button class="chat-clear" @click="clearChat()">
+            <i class="fa-solid fa-trash"></i> נקה שיחה
+          </button>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <!-- ===== ALPINE JS ===== -->
+  <script>
+    function app() {
+      return {
+        // Nav
+        activeSection: 'hero',
+        menuOpen: false,
+
+        // Settings
+        showSettings: false,
+        geminiKey: localStorage.getItem('geminiKey') || 'AIzaSyD7MDpyF3NRLYpCpT6N5TEeCp0f9jGkYvY',
+        omdbKey: localStorage.getItem('omdbKey') || '',
+        tempGeminiKey: '',
+        tempOmdbKey: '',
+
+        // Chat
+        chatOpen: false,
+        chatMessages: JSON.parse(localStorage.getItem('chatMessages') || '[]'),
+        chatInput: '',
+        chatLoading: false,
+
+        // Movies
+        movieQuery: '',
+        movies: [],
+        movieLoading: false,
+        movieError: '',
+        searchedOnce: false,
+
+        // Contact
+        contactForm: { name: '', phone: '', subject: '', message: '' },
+        contactSuccess: false,
+
+        // Skills animation
+        skillsVisible: false,
+
+        skills: [
+          { name: 'ביטוח חיים ובריאות', level: 96 },
+          { name: 'ביטוח רכב ורכוש', level: 90 },
+          { name: 'ניהול תביעות', level: 88 },
+          { name: 'ייעוץ פנסיוני', level: 82 },
+          { name: 'שירות לקוחות', level: 98 },
+        ],
+
+        services: [
+          { icon: '❤️‍🩹', title: 'ביטוח חיים', desc: 'הגנה על המשפחה שלכם בכל תרחיש. נבנה יחד כיסוי מותאם אישית שמעניק שקט נפשי אמיתי לכם ולקרוביכם.' },
+          { icon: '🏥', title: 'ביטוח בריאות', desc: 'גישה מהירה לרפואה פרטית, כיסוי ניתוחים, תרופות ובדיקות – בלי תורים, בלי הפתעות.' },
+          { icon: '🚗', title: 'ביטוח רכב', desc: 'מחובה ועד מקיף – נמצא את הפוליסה הנכונה שמגנה על הרכב שלכם במחיר הטוב ביותר.' },
+          { icon: '🏠', title: 'ביטוח דירה', desc: 'כיסוי לבנייה ותכולה, נזקי טבע, צנרת ואחריות צד ג׳. כי הבית הוא מקום הכי בטוח שיש.' },
+          { icon: '💼', title: 'ביטוח עסק', desc: 'הגנה על העסק שלכם – אחריות מקצועית, ביטוח עובדים, ציוד ומבנה. תתמקדו בצמיחה, אני אדאג לשאר.' },
+          { icon: '📊', title: 'ייעוץ פנסיוני', desc: 'תכנון פנסיוני חכם לעתיד שרוצים. קרנות פנסיה, גמל, ביטוחי מנהלים – כל מה שצריך לדעת, בשפה פשוטה.' },
+        ],
+
+        testimonials: [
+          { emoji: '👨', name: 'אמיר כהן', role: 'בעל עסק, רמת גן', text: 'דנה שינתה לי את התפיסה כלפי ביטוח. היא הסבירה לי בדיוק מה אני צריך ולא דחפה לי מוצרים מיותרים. חסכתי כסף וקיבלתי כיסוי טוב יותר.' },
+          { emoji: '👩', name: 'שרה לוי', role: 'אמא לשלושה, פתח תקווה', text: 'כשבעלי נפצע, דנה ליוותה אותנו בתהליך התביעה מ-א׳ עד ת׳. בלעדיה לא היינו יודעים מה לעשות. מקצועית, סבלנית ואכפתית.' },
+          { emoji: '👴', name: 'ד"ר יוסי מנדל', role: 'רופא, תל אביב', text: 'כבר 8 שנים שאני עובד עם דנה. היא תמיד זמינה, תמיד מדויקת, ותמיד מוצאת לי את הפתרון הנכון. אין כמוה.' },
+        ],
+
+        init() {
+          if (!localStorage.getItem('geminiKey')) {
+            localStorage.setItem('geminiKey', this.geminiKey);
+          }
+          this.tempGeminiKey = this.geminiKey;
+          this.tempOmdbKey = this.omdbKey;
+          this.setupScrollObserver();
+          this.setupSectionObserver();
+        },
+
+        setupScrollObserver() {
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                if (entry.target.closest('#about')) {
+                  this.skillsVisible = true;
+                }
+              }
+            });
+          }, { threshold: 0.15 });
+          document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        },
+
+        setupSectionObserver() {
+          const sections = document.querySelectorAll('section[id]');
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                this.activeSection = entry.target.id;
+              }
+            });
+          }, { rootMargin: '-40% 0px -40% 0px' });
+          sections.forEach(s => observer.observe(s));
+        },
+
+        saveSettings() {
+          this.geminiKey = this.tempGeminiKey.trim();
+          this.omdbKey = this.tempOmdbKey.trim();
+          localStorage.setItem('geminiKey', this.geminiKey);
+          localStorage.setItem('omdbKey', this.omdbKey);
+          this.showSettings = false;
+        },
+
+        async searchMovies() {
+          if (!this.movieQuery.trim()) return;
+          this.movieLoading = true;
+          this.movieError = '';
+          this.searchedOnce = true;
+          this.movies = [];
+
+          try {
+            // Search by title (single movie detail)
+            const searchTerms = this.movieQuery.trim().split(',').map(t => t.trim()).filter(Boolean);
+            const results = [];
+
+            for (const term of searchTerms.slice(0, 4)) {
+              const res = await fetch(
+                `https://www.omdbapi.com/?t=${encodeURIComponent(term)}&apikey=${this.omdbKey}&plot=short`
+              );
+              const data = await res.json();
+              if (data.Response === 'True') {
+                results.push(data);
+              }
+            }
+
+            // If only one term, also try search endpoint for multiple results
+            if (searchTerms.length === 1) {
+              const searchRes = await fetch(
+                `https://www.omdbapi.com/?s=${encodeURIComponent(this.movieQuery.trim())}&apikey=${this.omdbKey}&type=movie`
+              );
+              const searchData = await searchRes.json();
+              if (searchData.Response === 'True' && searchData.Search) {
+                // Fetch details for top results
+                const detailsPromises = searchData.Search.slice(0, 6).map(m =>
+                  fetch(`https://www.omdbapi.com/?i=${m.imdbID}&apikey=${this.omdbKey}&plot=short`)
+                    .then(r => r.json())
+                );
+                const detailedMovies = await Promise.all(detailsPromises);
+                const validDetails = detailedMovies.filter(d => d.Response === 'True');
+                // Merge: avoid duplicates
+                const existing = new Set(results.map(r => r.imdbID));
+                validDetails.forEach(d => { if (!existing.has(d.imdbID)) results.push(d); });
+              }
+            }
+
+            this.movies = results;
+            if (results.length === 0) this.movieError = 'לא נמצאו תוצאות. נסו שם אחר באנגלית.';
+          } catch (e) {
+            this.movieError = 'שגיאה בחיבור ל-OMDB. בדקו את המפתח שלכם.';
+          } finally {
+            this.movieLoading = false;
+          }
+        },
+
+        submitContact() {
+          const submissions = JSON.parse(localStorage.getItem('contactSubmissions') || '[]');
+          submissions.push({ ...this.contactForm, date: new Date().toISOString() });
+          localStorage.setItem('contactSubmissions', JSON.stringify(submissions));
+          this.contactForm = { name: '', phone: '', subject: '', message: '' };
+          this.contactSuccess = true;
+          setTimeout(() => { this.contactSuccess = false; }, 5000);
+        },
+
+        async sendMessage() {
+          const text = this.chatInput.trim();
+          if (!text || this.chatLoading) return;
+
+          this.chatMessages.push({ role: 'user', text });
+          this.chatInput = '';
+          this.chatLoading = true;
+          this.saveChatMessages();
+
+          await this.$nextTick();
+          this.scrollChatToBottom();
+
+          const systemPrompt = `אתה עוזר AI של דנה שפירו, מנהלת תיק לקוחות בכירה בחברת פניקס ביטוח. ענה בעברית בצורה ידידותית, מקצועית וקצרה. 
+          התמחויות: ביטוח חיים, בריאות, רכב, דירה, עסק, ייעוץ פנסיוני.
+          דנה מאמינה בשקיפות, ייעוץ ישיר וליווי אישי.
+          אם שואלים שאלות שאינן קשורות לביטוח, ענה בנימוס שתוכל לסייע בנושאי ביטוח ופנסיה.
+          שמור על תשובות קצרות (עד 3 משפטים) אלא אם נשאלת שאלה מורכבת.`;
+
+          try {
+            const history = this.chatMessages.slice(-10).map(m => ({
+              role: m.role,
+              parts: [{ text: m.text }]
+            }));
+
+            const body = {
+              system_instruction: { parts: [{ text: systemPrompt }] },
+              contents: history
+            };
+
+            const res = await fetch(
+              `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.geminiKey}`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+              }
+            );
+
+            const data = await res.json();
+
+            if (data.error) {
+              this.chatMessages.push({ role: 'model', text: `שגיאה: ${data.error.message}` });
+            } else {
+              const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'לא הצלחתי לענות – נסו שוב.';
+              this.chatMessages.push({ role: 'model', text: reply });
+            }
+          } catch (e) {
+            this.chatMessages.push({ role: 'model', text: 'אירעה שגיאה בחיבור. בדקו את מפתח ה-API.' });
+          } finally {
+            this.chatLoading = false;
+            this.saveChatMessages();
+            await this.$nextTick();
+            this.scrollChatToBottom();
+          }
+        },
+
+        scrollChatToBottom() {
+          const el = this.$refs.chatMessages;
+          if (el) el.scrollTop = el.scrollHeight;
+        },
+
+        saveChatMessages() {
+          localStorage.setItem('chatMessages', JSON.stringify(this.chatMessages.slice(-50)));
+        },
+
+        clearChat() {
+          this.chatMessages = [];
+          localStorage.removeItem('chatMessages');
+        }
+      };
+    }
+  </script>
+</body>
+</html>
